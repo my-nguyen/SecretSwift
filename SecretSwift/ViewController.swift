@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import LocalAuthentication
 
 class ViewController: UIViewController {
 
@@ -33,7 +34,50 @@ class ViewController: UIViewController {
 
     // tapping the button will unlock secret message
     @IBAction func authenticateUser(sender: AnyObject) {
-        unlockSecretMessage()
+        let context = LAContext()
+        var error: NSError?
+
+        // check whether the device is capable of supporting biometric authentication (fingerprint)
+        if context.canEvaluatePolicy(.DeviceOwnerAuthenticationWithBiometrics, error: &error) {
+            // if so request that the Touch ID begin a check now, giving it a string containing the reason
+            let reason = "Identify yourself!"
+            context.evaluatePolicy(.DeviceOwnerAuthenticationWithBiometrics, localizedReason: reason) {
+                [unowned self] (success: Bool, authenticationError: NSError?) -> Void in
+                // make sure to operate on the main thread
+                dispatch_async(dispatch_get_main_queue()) {
+                    // before performing operations accordingly depending on the authentication's success
+                    if success {
+                        self.unlockSecretMessage()
+                    } else {
+                        // special case when the user requested to enter password instead; Touch ID
+                        // includes this option on the screen as a fallback for users who are unable
+                        // to user fingerprint scanning at this time
+                        if let error = authenticationError {
+                            // unwrap the optional error received and check to see if it equals
+                            // LAError.UserFallback.rawValue; if so it means the user asked to enter a
+                            // password, in which case we send a derisory message and return
+                            if error.code == LAError.UserFallback.rawValue {
+                                let ac = UIAlertController(title: "Passcode? Ha!", message: "It's Touch ID or nothing – sorry!", preferredStyle: .Alert)
+                                ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                                self.presentViewController(ac, animated: true, completion: nil)
+                                return
+                            }
+                        }
+
+                        // at this point it means the error wasn't a fallback request, so show a generic
+                        // error message to the user
+                        let ac = UIAlertController(title: "Authentication failed", message: "Your fingerprint could not be verified; please try again.", preferredStyle: .Alert)
+                        ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                        self.presentViewController(ac, animated: true, completion: nil)
+                    }
+                }
+            }
+        } else {
+            // no Touch ID available: show an error
+            let ac = UIAlertController(title: "Touch ID not available", message: "Your device is not configured for Touch ID.", preferredStyle: .Alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+            self.presentViewController(ac, animated: true, completion: nil)
+        }
     }
 
     // see project Javascript-Safari for a detailed explanation of this method

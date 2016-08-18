@@ -17,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qK9-CM-0Mz">
+                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qK9-CM-0Mz">
                                 <rect key="frame" x="250" y="278" width="100" height="44"/>
                                 <state key="normal" title="Authenticate"/>
                                 <connections>
@@ -39,6 +39,7 @@
                             <constraint firstItem="b5Z-9S-XnM" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="QEN-KN-o9S"/>
                             <constraint firstItem="b5Z-9S-XnM" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="172" id="WVo-WD-XSz"/>
                             <constraint firstItem="b5Z-9S-XnM" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="iJG-Ym-lk3"/>
+                            <constraint firstItem="qK9-CM-0Mz" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="zYI-fj-jtx"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="ZDO-Sw-xAd"/>

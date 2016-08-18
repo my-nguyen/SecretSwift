@@ -20,6 +20,10 @@ class ViewController: UIViewController {
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIKeyboardWillHideNotification, object: nil)
         // receive notification when the keyboard changes
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIKeyboardWillChangeFrameNotification, object: nil)
+        // call saveSecretMessage() upon receiving notification that the app becomes inactive
+        notificationCenter.addObserver(self, selector: #selector(saveSecretMessage), name: UIApplicationWillResignActiveNotification, object: nil)
+
+        title = "Nothing to see here"
     }
 
     override func didReceiveMemoryWarning() {
@@ -27,7 +31,9 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    // tapping the button will unlock secret message
     @IBAction func authenticateUser(sender: AnyObject) {
+        unlockSecretMessage()
     }
 
     // see project Javascript-Safari for a detailed explanation of this method
@@ -47,6 +53,27 @@ class ViewController: UIViewController {
 
         let selectedRange = secret.selectedRange
         secret.scrollRangeToVisible(selectedRange)
+    }
+
+    // load the secret message into the text view
+    func unlockSecretMessage() {
+        secret.hidden = false
+        title = "Secret stuff!"
+
+        if let text = KeychainWrapper.stringForKey("SecretMessage") {
+            secret.text = text
+        }
+    }
+
+    // write the text view's message to the keychain, then hide it
+    func saveSecretMessage() {
+        if !secret.hidden {
+            KeychainWrapper.setString(secret.text, forKey: "SecretMessage")
+            // relinquish input focus on this view, to hide the keyboard
+            secret.resignFirstResponder()
+            secret.hidden = true
+            title = "Nothing to see here"
+        }
     }
 }
 
